@@ -1,0 +1,180 @@
+<html lang="en"><head><style type="text/css">@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>
+    <title>Python Flask Timeline app</title>
+    <link href="..\static\css\timeline.css" rel="stylesheet">
+    <link href="http://www.getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="..\static\css\bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <link href="..\static\css\simple-sidebar.css" rel="stylesheet">
+    <link href="..\static\css\bootstrap-tagsinput.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="..\static\js\moment-with-locales.js"></script>
+    <script src="..\static\js\bootstrap-datetimepicker.min.js"></script>
+    <script src="..\static\js\jquery.onscreen.min.js"></script>
+    <script src="..\static\js\jquery.jscroll.min.js"></script>
+    <script src="..\static\js\typeahead.bundle.js"></script>
+    <script src="..\static\js\bootstrap-tagsinput.js"></script>
+    <script src="..\static\js\bootstrap-tagsinput-angular.js"></script>
+    <script src="..\static\js\index.js"></script>
+    <style>
+      .popover {
+        max-width: 50%;
+      }
+      .btn-empty {
+        height: 34px;
+      }
+    </style>
+</head>
+
+<body style="padding-top: 70px;"><nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container-fluid">
+    <h1 id="timeline" style="=left: 5px;">
+      <button class="btn btn-primary" type="button" id="menu-toggle">
+        <i class="glyphicon glyphicon-cog"></i>
+      </button>
+      Timeline
+      <button type="button" class="btn btn-default navbar-btn pull-right" id="showButton" style="margin: 5px;">Show All</button>
+      <button type="button" class="btn btn-default navbar-btn pull-right" id="hideButton" style="margin: 5px;">Hide All</button>
+    </h1>
+  </div>
+</nav>
+
+
+<div id="wrapper" class="">
+  <div id="sidebar-wrapper">
+    <form class="form" style="width: 95%; margin: 2.5%;" id="configForm" method="POST" action="/updateConfig">
+      <div class="form-group">
+
+        <div class="input-group" style="margin-top: 5px;">
+          <input type="text" class="form-control" id="startDate" name="startDate" placeholder="Start Date">
+          <div class="input-group-addon">
+            <i class="glyphicon glyphicon-calendar"></i>
+          </div>
+        </div>
+
+        <div class="input-group" style="margin-top: 5px;">
+          <input type="text" class="form-control" id="endDate" name="endDate" placeholder="End Date">
+          <div class="input-group-addon">
+            <i class="glyphicon glyphicon-calendar"></i>
+          </div>
+        </div>
+
+        <div class="input-group" style="margin-top: 5px;">
+          <input type="text" class="form-control" id="ticks" name="ticks" placeholder="Ticks" style="width: 50%;">
+          <select class="form-control span2" id="unit" name="unit" placeholder="Unit" style="width: 50%;">
+            <option>Second(s)</option>
+            <option>Minute(s)</option>
+            <option>Hour(s)</option>
+            <option selected="selected">Day(s)</option>
+            <option>Month(s)</option>
+            <option>Year(s)</option>
+          </select>
+        </div>
+
+        <div class="input-group" style="margin-top: 5px;">
+          <input type="text" class="form-control" id="textFilter" name="textFilter" placeholder="Text Filter">
+          <div class="input-group-btn">
+            <button type="button" id="advancedFilter" class="btn btn-default" onclick="$('#filterModal').modal();">
+              <i class="glyphicon glyphicon-filter"></i><small>Advanced</small>
+            </button>
+          </div>
+        </div>
+
+        <div class="bootstrap-tagsinput"><input type="text" placeholder="Search Tags"></div><input type="text" class="form-control" id="tagSearch" name="tagSearch" placeholder="Search Tags" data-role="tagsinput" style="display: none;">
+
+        <div class="btn-group btn-group-justified" data-toggle="buttons" style="margin-top: 5px;">
+          <label class="btn btn-default btn-empty active">
+            <input type="checkbox" autocomplete="off" id="color-default" name="color-default">
+          <i class="glyphicon glyphicon-ok"></i></label>
+          <label class="btn btn-primary btn-empty active">
+            <input type="checkbox" autocomplete="off" id="color-primary" name="color-primary">
+          <i class="glyphicon glyphicon-ok"></i></label>
+          <label class="btn btn-success btn-empty active">
+            <input type="checkbox" autocomplete="off" id="color-success" name="color-success">
+          <i class="glyphicon glyphicon-ok"></i></label>
+          <label class="btn btn-info btn-empty active">
+            <input type="checkbox" autocomplete="off" id="color-info" name="color-info">
+          <i class="glyphicon glyphicon-ok"></i></label>
+          <label class="btn btn-warning btn-empty active">
+            <input type="checkbox" autocomplete="off" id="color-warning" name="color-warning">
+          <i class="glyphicon glyphicon-ok"></i></label>
+          <label class="btn btn-danger btn-empty active">
+            <input type="checkbox" autocomplete="off" id="color-danger" name="color-danger">
+          <i class="glyphicon glyphicon-ok"></i></label>
+        </div>
+
+        <button type="button" style="margin: 2.5%; width: 45%;" id="clearConfig" class="btn btn-warning"><i class="glyphicon glyphicon-refresh"></i>&nbsp;Reset</button>
+
+        <button type="submit" style="margin: 2.5%; width: 45%;" id="submitConfig" class="btn btn-default pull-right">Hit Me!</button>
+
+      </div>
+    </form>
+  </div>
+
+  <div id="page-content-wrapper">
+    <div class="container">
+    <div class="row">
+    <div class="col-md-6">
+      <ul id="time-line" class="timeline"><li id="event_2" style="margin-top: 0px; "><div class="timeline-badge default" id="timeline-badge2" tooltip-time="Sun, 18 Sep 2016 20:49:33 GMT" popover-title="World Hello<button type=&quot;button&quot; is-active=&quot;false&quot; id=&quot;tags2&quot; class=&quot;btn pull-right&quot;><i class=&quot;glyphicon glyphicon-tags&quot;></i></button>" popover-content="<small class=&quot;text-muted&quot;><i class=&quot;glyphicon glyphicon-time&quot;></i>&amp;nbsp;Sun, 18 Sep 2016 20:49:33 GMT</small><p>I'm Mikmik, what's up!?
+Is this a newline?</p>" data-original-title="" title=""><i class="glyphicon glyphicon-hourglass"></i></div></li><li id="event_3" style="margin-top: 60.024px; "><div class="timeline-badge primary" id="timeline-badge3" tooltip-time="Mon, 19 Sep 2016 20:50:06 GMT" popover-title="Super Important<button type=&quot;button&quot; is-active=&quot;false&quot; id=&quot;tags3&quot; class=&quot;btn pull-right&quot;><i class=&quot;glyphicon glyphicon-tags&quot;></i></button>" popover-content="<small class=&quot;text-muted&quot;><i class=&quot;glyphicon glyphicon-time&quot;></i>&amp;nbsp;Mon, 19 Sep 2016 20:50:06 GMT</small><p>I'm Mizmiz, what's up!?
+Is this a newline?</p>" data-original-title="" title=""><i class="glyphicon glyphicon-calendar"></i></div></li><li id="event_4" style="margin-top: 232.39200000000002px; "><div class="timeline-badge success" id="timeline-badge4" tooltip-time="Fri, 23 Sep 2016 17:47:34 GMT" popover-title="Testing HTML<button type=&quot;button&quot; is-active=&quot;false&quot; id=&quot;tags4&quot; class=&quot;btn pull-right&quot;><i class=&quot;glyphicon glyphicon-tags&quot;></i></button>" popover-content="<small class=&quot;text-muted&quot;><i class=&quot;glyphicon glyphicon-time&quot;></i>&amp;nbsp;Fri, 23 Sep 2016 17:47:34 GMT</small><p><table class=&quot;table table-striped table-hover&quot;><tr><th>Firstname</th><th>Lastname</th><th>Age</th></tr><tr><td>Jill</td><td>Smith</td><td>50</td></tr><tr><td>Eve</td><td>Jackson</td><td>94</td></tr><tr><td>John</td><td>Doe</td><td>80</td></tr></table></p>" data-original-title="" title=""><i class="glyphicon glyphicon-leaf"></i></div></li><li id="event_6" style="margin-top: 135px; "><div class="timeline-badge danger" id="timeline-badge6" tooltip-time="Sun, 25 Sep 2016 23:47:34 GMT" popover-title="Lorem Ipsum<button type=&quot;button&quot; is-active=&quot;false&quot; id=&quot;tags6&quot; class=&quot;btn pull-right&quot;><i class=&quot;glyphicon glyphicon-tags&quot;></i></button>" popover-content="<small class=&quot;text-muted&quot;><i class=&quot;glyphicon glyphicon-time&quot;></i>&amp;nbsp;Sun, 25 Sep 2016 23:47:34 GMT</small><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam fermentum finibus magna ut convallis. Fusce sed arcu nunc. Maecenas porta neque eu eros dictum, ac efficitur dui sodales. Suspendisse molestie elit ut massa varius porta. Donec a egestas libero. Phasellus venenatis elit vel auctor semper. Donec pretium interdum diam, id molestie risus eleifend quis. Aenean facilisis bibendum lacus ut fringilla. Integer dapibus convallis dolor, sed congue ex pharetra molestie.</p>" data-original-title="" title=""><i class="glyphicon glyphicon-heart"></i></div></li><li id="event_5" style="margin-top: 105px; margin-bottom: 60px; "><div class="timeline-badge info" id="timeline-badge5" tooltip-time="Tue, 27 Sep 2016 17:47:34 GMT" popover-title="More testing<button type=&quot;button&quot; is-active=&quot;false&quot; id=&quot;tags5&quot; class=&quot;btn pull-right&quot;><i class=&quot;glyphicon glyphicon-tags&quot;></i></button>" popover-content="<small class=&quot;text-muted&quot;><i class=&quot;glyphicon glyphicon-time&quot;></i>&amp;nbsp;Tue, 27 Sep 2016 17:47:34 GMT</small><p><table class=&quot;table table-striped table-hover&quot;><tr><th>Firstname</th><th>Lastname</th><th>Age</th><th>City</th><th>Pet</th><th>Lucky Number</th><th>Nickname</th></tr><tr><td>Jill</td><td>Smith</td><td>50</td><td>Tel Aviv</td><td>Kitten</td><td>7</td><td>Jules</td></tr><tr><td>Eve</td><td>Jackson</td><td>94</td><td>Haifa</td><td>Iguana</td><td>51</td><td>Eva</td></tr><tr><td>John</td><td>Doe</td><td>80</td><td>Somewhre</td><td>Fish</td><td>0</td><td>Jane</td></tr></table></p>" data-original-title="" title=""><i class="glyphicon glyphicon-send"></i></div></li></ul></div>
+
+<div class="col-md-6">
+      <ul id="time-line" class="timeline"><li id="event_2" style="margin-top: 0px; "><div class="timeline-badge default" id="timeline-badge2" tooltip-time="Sun, 18 Sep 2016 20:49:33 GMT" popover-title="World Hello<button type=&quot;button&quot; is-active=&quot;false&quot; id=&quot;tags2&quot; class=&quot;btn pull-right&quot;><i class=&quot;glyphicon glyphicon-tags&quot;></i></button>" popover-content="<small class=&quot;text-muted&quot;><i class=&quot;glyphicon glyphicon-time&quot;></i>&amp;nbsp;Sun, 18 Sep 2016 20:49:33 GMT</small><p>I'm Mikmik, what's up!?
+Is this a newline?</p>" data-original-title="" title=""><i class="glyphicon glyphicon-hourglass"></i></div></li><li id="event_3" style="margin-top: 60.024px; "><div class="timeline-badge primary" id="timeline-badge3" tooltip-time="Mon, 19 Sep 2016 20:50:06 GMT" popover-title="Super Important<button type=&quot;button&quot; is-active=&quot;false&quot; id=&quot;tags3&quot; class=&quot;btn pull-right&quot;><i class=&quot;glyphicon glyphicon-tags&quot;></i></button>" popover-content="<small class=&quot;text-muted&quot;><i class=&quot;glyphicon glyphicon-time&quot;></i>&amp;nbsp;Mon, 19 Sep 2016 20:50:06 GMT</small><p>I'm Mizmiz, what's up!?
+Is this a newline?</p>" data-original-title="" title=""><i class="glyphicon glyphicon-calendar"></i></div></li><li id="event_4" style="margin-top: 232.39200000000002px; "><div class="timeline-badge success" id="timeline-badge4" tooltip-time="Fri, 23 Sep 2016 17:47:34 GMT" popover-title="Testing HTML<button type=&quot;button&quot; is-active=&quot;false&quot; id=&quot;tags4&quot; class=&quot;btn pull-right&quot;><i class=&quot;glyphicon glyphicon-tags&quot;></i></button>" popover-content="<small class=&quot;text-muted&quot;><i class=&quot;glyphicon glyphicon-time&quot;></i>&amp;nbsp;Fri, 23 Sep 2016 17:47:34 GMT</small><p><table class=&quot;table table-striped table-hover&quot;><tr><th>Firstname</th><th>Lastname</th><th>Age</th></tr><tr><td>Jill</td><td>Smith</td><td>50</td></tr><tr><td>Eve</td><td>Jackson</td><td>94</td></tr><tr><td>John</td><td>Doe</td><td>80</td></tr></table></p>" data-original-title="" title=""><i class="glyphicon glyphicon-leaf"></i></div></li><li id="event_6" style="margin-top: 135px; "><div class="timeline-badge danger" id="timeline-badge6" tooltip-time="Sun, 25 Sep 2016 23:47:34 GMT" popover-title="Lorem Ipsum<button type=&quot;button&quot; is-active=&quot;false&quot; id=&quot;tags6&quot; class=&quot;btn pull-right&quot;><i class=&quot;glyphicon glyphicon-tags&quot;></i></button>" popover-content="<small class=&quot;text-muted&quot;><i class=&quot;glyphicon glyphicon-time&quot;></i>&amp;nbsp;Sun, 25 Sep 2016 23:47:34 GMT</small><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam fermentum finibus magna ut convallis. Fusce sed arcu nunc. Maecenas porta neque eu eros dictum, ac efficitur dui sodales. Suspendisse molestie elit ut massa varius porta. Donec a egestas libero. Phasellus venenatis elit vel auctor semper. Donec pretium interdum diam, id molestie risus eleifend quis. Aenean facilisis bibendum lacus ut fringilla. Integer dapibus convallis dolor, sed congue ex pharetra molestie.</p>" data-original-title="" title=""><i class="glyphicon glyphicon-heart"></i></div></li><li id="event_5" style="margin-top: 105px; margin-bottom: 60px; "><div class="timeline-badge info" id="timeline-badge5" tooltip-time="Tue, 27 Sep 2016 17:47:34 GMT" popover-title="More testing<button type=&quot;button&quot; is-active=&quot;false&quot; id=&quot;tags5&quot; class=&quot;btn pull-right&quot;><i class=&quot;glyphicon glyphicon-tags&quot;></i></button>" popover-content="<small class=&quot;text-muted&quot;><i class=&quot;glyphicon glyphicon-time&quot;></i>&amp;nbsp;Tue, 27 Sep 2016 17:47:34 GMT</small><p><table class=&quot;table table-striped table-hover&quot;><tr><th>Firstname</th><th>Lastname</th><th>Age</th><th>City</th><th>Pet</th><th>Lucky Number</th><th>Nickname</th></tr><tr><td>Jill</td><td>Smith</td><td>50</td><td>Tel Aviv</td><td>Kitten</td><td>7</td><td>Jules</td></tr><tr><td>Eve</td><td>Jackson</td><td>94</td><td>Haifa</td><td>Iguana</td><td>51</td><td>Eva</td></tr><tr><td>John</td><td>Doe</td><td>80</td><td>Somewhre</td><td>Fish</td><td>0</td><td>Jane</td></tr></table></p>" data-original-title="" title=""><i class="glyphicon glyphicon-send"></i></div></li></ul></div>
+
+
+</div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+<div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="filterModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button id="modal-x" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="filterModalLabel">Advanced Filters</h4>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal" role="form" style="width: 90%; margin-left: 5%;" id="advancedFiltersForm" method="post" action="/updateFilters">
+
+              <input type="hidden" id="count" name="count" value="1">
+                <div id="filterFields"><div id="filterGroup1" class="input-group" style="margin-top: 5px;"><span class="input-group-addon"><input type="checkbox" id="required1" name="required1"></span><div class="input-group-btn"><button type="button" id="exclude1" name="exclude1" class="btn btn-success" active="false" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; width: 50px;">Inc. </button></div><input type="text" class="form-control" id="filter1" name="filter1" placeholder="Filter" style="width: 80%"><select class="form-control span2" id="eventField1" name="eventField1" placeholder="Field" style="width: 20%;"><option>Title</option><option>Text</option><option>All</option></select><div class="input-group-btn"><button type="button" id="addRemove1" field-counter="1" class="btn btn-success" style="border-top-left-radius: 0px; border-bottom-left-radius: 0px;"><i class="glyphicon glyphicon-plus"></i></button></div><input type="hidden" id="include1" name="include1" value="true"></div></div>
+    
+              <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#filterHelp" aria-expanded="false" aria-controls="filterHelp" style="margin: 5px; margin-left: 92.5%;">
+                <i class="glyphicon glyphicon-question-sign"></i>
+              </button>
+
+              <div class="collapse" id="filterHelp" style="">
+                <div class="well">
+                  Use this window to add more <b>complex</b> filtering patterns.
+                  <ul>
+                    <li>Use the checkbox to the left of each field to choose whether the filter is required all not. The events displayed will match <b>each filter with the checkbox filled, and at least one other filter.</b></li>
+                    <li>Use the <kbd>Inc.</kbd> / <kbd>Exc.</kbd> button to choose whether to include events with the specified text, or to filter them out.</li>
+                    <li>Input the filter text in the text box.</li>
+                    <li>Use the selection dropdown to choose the part of the event the filter will be applied to: title, text, or both.</li>
+                    <li>To add additional filter fields, or remove the current field - click the <kbd>&nbsp;+&nbsp;</kbd> / <kbd>&nbsp;-&nbsp;</kbd> buttons on the right side</li>
+                  </ul>
+                  <p>For example, to get all the event without the word 'bad' in any part of them, and with either 'Good' or 'Great' in the title, the following filters will be used:
+                  <br><img src="..\static\example_filter.gif" style="height: auto; width: 100%;"></p>
+                  <strong>Good luck!</strong>
+                  <br><small class="text-muted">Filters are case insensitive.</small>
+                  </div>
+                </div>
+
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button id="modal-close" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" id="btnUpdate" class="btn btn-primary" onclick="$('#advancedFiltersForm').submit();">Update</button>
+        </div>
+    </div>
+</div>
+</div></body></html>

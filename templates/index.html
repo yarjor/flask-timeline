@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Python Flask Timeline app</title>
+    <link href="..\static\css\timeline.css" rel="stylesheet">
+    <link href="http://www.getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="..\static\css\bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <link href="..\static\css\simple-sidebar.css" rel="stylesheet">
+    <link href="..\static\css\bootstrap-tagsinput.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="..\static\js\moment-with-locales.js"></script>
+    <script src="..\static\js\bootstrap-datetimepicker.min.js"></script>
+    <script src="..\static\js\jquery.onscreen.min.js"></script>
+    <script src="..\static\js\jquery.jscroll.min.js"></script>
+    <script src="..\static\js\typeahead.bundle.js"></script>
+    <script src="..\static\js\bootstrap-tagsinput.js"></script>
+    <script src="..\static\js\bootstrap-tagsinput-angular.js"></script>
+    <script src="..\static\js\index.js"></script>
+    <style>
+      .popover {
+        max-width: 50%;
+      }
+      .btn-empty {
+        height: 34px;
+      }
+    </style>
+</head>
+
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container-fluid">
+    <h1 id="timeline" style="=left: 5px;">
+      <button class="btn btn-primary" type="button" id="menu-toggle">
+        <i class="glyphicon glyphicon-cog"></i>
+      </button>
+      Timeline
+      <button type="button" class="btn btn-default navbar-btn pull-right" id="showButton" style="margin: 5px;">Show All</button>
+      <button type="button" class="btn btn-default navbar-btn pull-right" id="hideButton" style="margin: 5px;">Hide All</button>
+    </h1>
+  </div>
+</nav>
+
+<body style="padding-top: 70px;">
+<div id="wrapper">
+  <div id="sidebar-wrapper">
+    <form class="form" style="width: 95%; margin: 2.5%;" id="configForm" method=POST action="{{ url_for('update_config') }}">
+      <div class="form-group">
+
+        <div class="input-group" style="margin-top: 5px;">
+          <input type="text" class="form-control" id="startDate" name="startDate" placeholder="Start Date">
+          <div class="input-group-addon">
+            <i class="glyphicon glyphicon-calendar"></i>
+          </div>
+        </div>
+
+        <div class="input-group" style="margin-top: 5px;">
+          <input type="text" class="form-control" id="endDate" name="endDate" placeholder="End Date">
+          <div class="input-group-addon">
+            <i class="glyphicon glyphicon-calendar"></i>
+          </div>
+        </div>
+
+        <div class="input-group" style="margin-top: 5px;">
+          <input type="text" class="form-control" id="ticks" name="ticks" placeholder="Ticks" style="width: 50%;">
+          <select class="form-control span2" id="unit" name="unit" placeholder="Unit" style="width: 50%;">
+            <option>Second(s)</option>
+            <option>Minute(s)</option>
+            <option>Hour(s)</option>
+            <option selected="selected">Day(s)</option>
+            <option>Month(s)</option>
+            <option>Year(s)</option>
+          </select>
+        </div>
+
+        <div class="input-group" style="margin-top: 5px;">
+          <input type="text" class="form-control" id="textFilter" name="textFilter" placeholder="Text Filter">
+          <div class="input-group-btn">
+            <button type="button" id="advancedFilter" class="btn btn-default" onclick="$('#filterModal').modal();">
+              <i class="glyphicon glyphicon-filter"></i><small>Advanced</small>
+            </button>
+          </div>
+        </div>
+
+        <input type="text" class="form-control" id="tagSearch" name="tagSearch" placeholder="Search Tags" data-role="tagsinput">
+
+        <div class="btn-group btn-group-justified" data-toggle="buttons" style="margin-top: 5px;">
+          <label class="btn btn-default btn-empty">
+            <input type="checkbox" autocomplete="off" id="color-default" name="color-default">
+          </label>
+          <label class="btn btn-primary btn-empty">
+            <input type="checkbox" autocomplete="off" id="color-primary" name="color-primary">
+          </label>
+          <label class="btn btn-success btn-empty">
+            <input type="checkbox" autocomplete="off" id="color-success" name="color-success">
+          </label>
+          <label class="btn btn-info btn-empty">
+            <input type="checkbox" autocomplete="off" id="color-info" name="color-info">
+          </label>
+          <label class="btn btn-warning btn-empty">
+            <input type="checkbox" autocomplete="off" id="color-warning" name="color-warning">
+          </label>
+          <label class="btn btn-danger btn-empty">
+            <input type="checkbox" autocomplete="off" id="color-danger" name="color-danger">
+          </label>
+        </div>
+
+        <button type="button" style="margin: 2.5%; width: 45%;" id="clearConfig" class="btn btn-warning"><i class="glyphicon glyphicon-refresh"></i>&nbsp;Reset</button>
+
+        <button type="submit" style="margin: 2.5%; width: 45%;" id="submitConfig" class="btn btn-default pull-right">Hit Me!</button>
+
+      </div>
+    </form>
+  </div>
+
+  <div id="page-content-wrapper">
+    <div class="container">
+      <ul id="time-line" class="timeline">
+          
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+</body>
+
+</html>
+
+<div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="filterModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button id="modal-x" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="filterModalLabel">Advanced Filters</h4>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal" role="form" style="width: 90%; margin-left: 5%;" id="advancedFiltersForm" method=post action="{{ url_for('update_filters') }}">
+
+              <input type="hidden" id="count" name="count" value="1">
+                <div id="filterFields">
+                  
+                </div>
+    
+              <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#filterHelp" aria-expanded="false" aria-controls="filterHelp" style="margin: 5px; margin-left: 92.5%;">
+                <i class="glyphicon glyphicon-question-sign"></i>
+              </button>
+
+              <div class="collapse" id="filterHelp" style>
+                <div class="well">
+                  Use this window to add more <b>complex</b> filtering patterns.
+                  <ul>
+                    <li>Use the checkbox to the left of each field to choose whether the filter is required all not. The events displayed will match <b>each filter with the checkbox filled, and at least one other filter.</b></li>
+                    <li>Use the <kbd>Inc.</kbd> / <kbd>Exc.</kbd> button to choose whether to include events with the specified text, or to filter them out.</li>
+                    <li>Input the filter text in the text box.</li>
+                    <li>Use the selection dropdown to choose the part of the event the filter will be applied to: title, text, or both.</li>
+                    <li>To add additional filter fields, or remove the current field - click the <kbd>&nbsp;+&nbsp;</kbd> / <kbd>&nbsp;-&nbsp;</kbd> buttons on the right side</li>
+                  </ul>
+                  <p>For example, to get all the event without the word 'bad' in any part of them, and with either 'Good' or 'Great' in the title, the following filters will be used:
+                  <br><img src="..\static\example_filter.gif" style="height: auto; width: 100%;"></p>
+                  <strong>Good luck!</strong>
+                  <br><small class="text-muted">Filters are case insensitive.</small>
+                  </div>
+                </div>
+
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button id="modal-close" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" id="btnUpdate" class="btn btn-primary" onclick="$('#advancedFiltersForm').submit();">Update</button>
+        </div>
+    </div>
+</div>
+</div>
