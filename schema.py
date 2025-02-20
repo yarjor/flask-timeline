@@ -1,16 +1,16 @@
 #!usr/bin/python
 
 from sqlalchemy import create_engine
-from sqlalchemy import Table, Column, Integer, String, DateTime, ForeignKey
-from sqlalchemy.orm import relationship, sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, DeclarativeBase, Mapped, mapped_column
 from datetime import datetime
 from os import path
 from consts import *
 
 engine = create_engine('sqlite:///{}'.format(DB_NAME), echo=False)
-Base = declarative_base()
 Session = sessionmaker(bind=engine)
+
+class Base(DeclarativeBase):
+    pass
 
 class Event(Base):
     '''
@@ -27,25 +27,15 @@ class Event(Base):
     '''
     __tablename__ = 'events'
 
-    id = Column(Integer, primary_key=True)
-    title = Column(String)
-    description = Column(String)
-    time = Column(DateTime)
-    icon = Column(String)
-    color = Column(String)
-    tags = Column(String)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str]
+    description: Mapped[str]
+    time: Mapped[datetime]
+    icon: Mapped[str] = mapped_column(default='calendar')
+    color: Mapped[str] = mapped_column(default='default')
+    tags: Mapped[str] = mapped_column(default='')
 
-
-    def __init__(self, title, description, time, icon='calendar', color='default', tags=''):
-        self.title = title
-        self.description = description
-        self.time = time
-        self.icon = icon
-        self.color = color
-        self.tags = tags
-
-
-    def to_dict(self):
+    def to_dict(self) -> dict:
         '''
         Returns dict form of the event, in order to send it JSONified to the
         browser.
@@ -67,7 +57,7 @@ def db_create():
     Base.metadata.create_all(engine)
     if not path.isfile(ALL_TAGS):
         with open(ALL_TAGS, 'wb') as f:
-            f.write('')
+            f.write(b'')
 
 if __name__ == '__main__':
     db_create()

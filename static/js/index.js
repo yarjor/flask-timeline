@@ -281,12 +281,14 @@ function populateTimeline() {
               $.ajax({
                 url: '/updateTags/' + id,
                 type: 'POST',
-                data: $('#tagField' + id).val(),
+                data: {
+                  tags: $('#tagField' + id).val()
+                },
                 success: function(res) {
                   console.log(res);
                   $('#tagField' + id).tagsinput('destroy');
                   $('#tagField' + id).remove();
-                  $('#tags' + id).attr('is-active', 'false') 
+                  $('#tags' + id).attr('is-active', 'false')
                 },
                 error: function(error) {
                   console.log(error);

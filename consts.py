@@ -1,6 +1,7 @@
 #!usr/bin/python
 
 from datetime import datetime, timedelta
+from typing import Any
 
 
 ################################
@@ -61,7 +62,7 @@ PORT = 5000
 APP_KEY = 'development key'
 
 # Empty user config - probably shouldn't touch this
-EMPTY_CONFIG = dict(
+EMPTY_CONFIG: dict[str, Any] = dict(
     tick=DEFAULT_TICK,
     textual_tick=TEXTUAL_TICK,
     start=datetime.min,
